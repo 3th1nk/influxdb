@@ -93,9 +93,9 @@ func WithDebugger() Option {
 	}
 }
 
-func WithAuth(username, password string) Option {
+func WithCredential(username, passOrToken string) Option {
 	return func(c *Client) {
 		c.username = username
-		c.password = password
+		c.password = passOrToken
 	}
 }

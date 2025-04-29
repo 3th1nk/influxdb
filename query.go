@@ -8,10 +8,13 @@ import (
 	"strings"
 )
 
-func (this *Client) buildQueryUrl(db, sql string) string {
+func (this *Client) buildQueryUrl(db, rp, sql string) string {
 	uri := this.addr + "/query?epoch=" + this.queryEpoch
 	if db != "" {
 		uri += "&db=" + url.QueryEscape(db)
+	}
+	if rp != "" {
+		uri += "&rp=" + url.QueryEscape(rp)
 	}
 	if sql != "" {
 		uri += "&q=" + url.QueryEscape(sql)
@@ -35,9 +38,10 @@ type queryResp struct {
 
 // RawQuery 执行查询语句
 //	- db: 数据库名，也可以在sql语句中指定数据库
+//	- rp: 保留策略名，为空时使用默认
 //	- sql: 查询语句，语法参考：https://docs.influxdata.com/influxdb/v1/query_language/explore-data/#the-basic-select-statement
-func (this *Client) RawQuery(db, sql string) ([]*Series, error) {
-	queryUrl := this.buildQueryUrl(db, sql)
+func (this *Client) RawQuery(db, rp, sql string) ([]*Series, error) {
+	queryUrl := this.buildQueryUrl(db, rp, sql)
 	var resp queryResp
 	resBody, err := doRequest(http.MethodGet, queryUrl, "", nil, &resp)
 	if err != nil {
@@ -136,22 +140,7 @@ func (this *Query) TimeZone(tz string) *Query {
 func (this *Query) from() string {
 	arr := make([]string, 0, len(this.measurements))
 	for _, measurement := range this.measurements {
-		//	语法：
-		// 	    FROM <measurement_name> // 默认数据库和保留策略
-		// 	    FROM <measurement_name>,<measurement_name> // 默认数据库和保留策略，多个表
-		// 	    FROM <database_name>.<retention_policy_name>.<measurement_name> // 指定数据库和保留策略
-		// 	    FROM <database_name>..<measurement_name> // 指定数据库，默认保留策略
-
-		// 对于当前实现而言，如果db未指定，最终也无法查询，所以这里默认db不可能为空
-		//	加双引号是为了防止db、rp、measurement名称中有特殊字符
-		from := Quote(this.db) + `.`
-		if this.rp != "" {
-			from += Quote(this.rp) + `.`
-		} else {
-			from += `.`
-		}
-		from += Quote(measurement)
-		arr = append(arr, from)
+		arr = append(arr, Quote(measurement))
 	}
 	return strings.Join(arr, ",")
 }
@@ -189,5 +178,5 @@ func (this *Query) Do() ([]*Series, error) {
 		return nil, err
 	}
 
-	return this.client.RawQuery(this.db, this.String())
+	return this.client.RawQuery(this.db, this.rp, this.String())
 }

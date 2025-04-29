@@ -6,7 +6,7 @@ import (
 )
 
 func (this *Client) ShowRetentionPolicies(db string) ([]*RetentionPolicy, error) {
-	series, err := this.RawQuery(db, "show retention policies")
+	series, err := this.RawQuery(db, "", "show retention policies")
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (this *Client) CreateRetentionPolicy(db string, rp *RetentionPolicy) (bool,
 		sql += " default"
 	}
 
-	if _, err = this.RawQuery(db, sql); err != nil {
+	if _, err = this.RawQuery(db, "", sql); err != nil {
 		return false, err
 	}
 	return true, nil
@@ -52,7 +52,7 @@ func (this *Client) AlterRetentionPolicy(db string, rp *RetentionPolicy) error {
 	if rp.Default {
 		sql += " default"
 	}
-	_, err := this.RawQuery(db, sql)
+	_, err := this.RawQuery(db, "", sql)
 	return err
 }
 
@@ -69,12 +69,12 @@ func (this *Client) DropRetentionPolicy(db, rp string) error {
 	}
 
 	// DROP RETENTION POLICY <retention_policy_name> ON <database_name>
-	_, err = this.RawQuery("", fmt.Sprintf("drop retention policy \"%s\" on \"%s\"", rp, db))
+	_, err = this.RawQuery("", "", fmt.Sprintf("drop retention policy \"%s\" on \"%s\"", rp, db))
 	return err
 }
 
 func (this *Client) ShowDatabases() ([]string, error) {
-	series, err := this.RawQuery("", "show databases")
+	series, err := this.RawQuery("", "", "show databases")
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func (this *Client) CreateDatabase(db string) (bool, error) {
 		return false, nil
 	}
 
-	if _, err = this.RawQuery("", "create database "+db); err != nil {
+	if _, err = this.RawQuery("", "", "create database "+db); err != nil {
 		return false, err
 	}
 	return true, nil
@@ -108,12 +108,12 @@ func (this *Client) DropDatabase(db string) error {
 	if db == "" {
 		return nil
 	}
-	_, err := this.RawQuery("", "drop database "+db)
+	_, err := this.RawQuery("", "", "drop database "+db)
 	return err
 }
 
 func (this *Client) ShowMeasurements(db string) ([]string, error) {
-	series, err := this.RawQuery(db, "show measurements")
+	series, err := this.RawQuery(db, "", "show measurements")
 	if err != nil {
 		return nil, err
 	}
@@ -125,12 +125,12 @@ func (this *Client) ShowMeasurements(db string) ([]string, error) {
 }
 
 func (this *Client) DropMeasurement(db, measurement string) error {
-	_, err := this.RawQuery(db, "drop measurement "+measurement)
+	_, err := this.RawQuery(db, "", "drop measurement "+measurement)
 	return err
 }
 
 func (this *Client) ShowTagKeys(db, measurement string) ([]string, error) {
-	series, err := this.RawQuery(db, "show tag keys from "+measurement)
+	series, err := this.RawQuery(db, "", "show tag keys from "+measurement)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +142,7 @@ func (this *Client) ShowTagKeys(db, measurement string) ([]string, error) {
 }
 
 func (this *Client) ShowFieldKeys(db, measurement string) ([]string, error) {
-	series, err := this.RawQuery(db, "show field keys from "+measurement)
+	series, err := this.RawQuery(db, "", "show field keys from "+measurement)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +154,7 @@ func (this *Client) ShowFieldKeys(db, measurement string) ([]string, error) {
 }
 
 func (this *Client) ShowSeries(db, measurement string) ([]string, error) {
-	series, err := this.RawQuery(db, "show series from "+measurement)
+	series, err := this.RawQuery(db, "", "show series from "+measurement)
 	if err != nil {
 		return nil, err
 	}

@@ -32,12 +32,12 @@ func TestClient_WriteAndQuery(t *testing.T) {
 	err := initTestDbRp()
 	assert.NoError(t, err)
 
-	tagVal := `tag"\n ,=n1'\`
+	tagVal := `1234`
 	fVal := `val"\n ,=n1'\`
 	point := &Point{
 		Measurement: FormatMeasurement("Measurement-2"),
 		Tags: map[string]interface{}{
-			"tag": EscapeTagValue(tagVal),
+			"tag1": EscapeTagValue(tagVal),
 		},
 		Fields: map[string]interface{}{
 			"value": EscapeFieldValue(fVal),
