@@ -99,15 +99,15 @@ func (this *Query) Where(cond ICond) *Query {
 	return this
 }
 
-// GroupBy 设置分组字段
-//	注意：内部会自动添加`GROUP BY`前缀，外部需要处理字段双引号
+// GroupBy 设置分组列
+//	注意：内部会自动添加`GROUP BY`前缀，外部需要处理双引号
 func (this *Query) GroupBy(groupBy string) *Query {
 	this.groupBy = " GROUP BY " + groupBy
 	return this
 }
 
-// OrderBy 设置排序字段
-//	注意：内部会自动添加`ORDER BY`前缀，外部需要处理字段双引号
+// OrderBy 设置排序列
+//	注意：内部会自动添加`ORDER BY`前缀，外部需要处理双引号
 func (this *Query) OrderBy(orderBy string) *Query {
 	this.orderBy = " ORDER BY " + orderBy
 	return this

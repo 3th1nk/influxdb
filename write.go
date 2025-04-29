@@ -44,8 +44,8 @@ func (this *Client) RawWrite(db, rp string, lines []string) error {
 //	注意：写入精度默认为秒，可以通过 WithWritePrecision 设置
 type Point struct {
 	Measurement string                 // 表名，必须指定
-	Tags        map[string]interface{} // tag字段
-	Fields      map[string]interface{} // field字段
+	Tags        map[string]interface{} // 标签
+	Fields      map[string]interface{} // 字段
 	Time        int64                  // 时间戳，不传时数据库会自动写入当前时间
 }
 

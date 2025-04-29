@@ -16,9 +16,9 @@
 - 写入数据：
   - tag value不能用双引号包裹，field value如果是字符值必须用双引号包裹，所以转义逻辑应该区分对待
 - 查询数据：
-  - tag value和field value都是以单引号包裹,time字段和数值型field value除外
-- tag字段通常用于索引和过滤，因此它们的值应该具有较低的基数（即重复率高），基数太大的话会导致内存占用过高
-- field字段用于存储实际的测量值，具有较高的基数
+  - tag value和field value都是以单引号包裹，时间索引和数值型field value除外
+- tag通常用于索引和过滤，因此它们的值应该具有较低的基数（即重复率高），基数太大的话会导致内存占用过高
+- field用于存储实际的测量值，具有较高的基数
 
 ## 数据类型
 * https://docs.influxdata.com/influxdb/v1/write_protocols/line_protocol_reference/#data-types
