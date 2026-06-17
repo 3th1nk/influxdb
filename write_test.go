@@ -38,10 +38,10 @@ func TestClient_WriteAndQuery(t *testing.T) {
 	point := &Point{
 		Measurement: FormatMeasurement("Measurement-2"),
 		Tags: map[string]interface{}{
-			"tag1": EscapeTagValue(tagVal),
+			"tag1": tagVal,
 		},
 		Fields: map[string]interface{}{
-			"value": EscapeFieldValue(fVal),
+			"value": fVal,
 		},
 	}
 

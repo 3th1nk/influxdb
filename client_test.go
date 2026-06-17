@@ -1,6 +1,8 @@
 package influxdb
 
 import (
+	"time"
+
 	"github.com/3th1nk/easygo/util/logs"
 )
 
@@ -17,6 +19,9 @@ var (
 
 func init() {
 	testClient = NewClient(addr,
+		WithWritePoolSize(200),
+		WithFlushSize(5000),
+		WithFlushInterval(time.Second),
 		WithLogger(logs.Stdout(logs.LevelAll)),
 	)
 }

@@ -2,9 +2,10 @@ package influxdb
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/3th1nk/easygo/util/jsonUtil"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestClient_CreateDatabase(t *testing.T) {
@@ -20,6 +21,7 @@ func TestClient_CreateDatabase(t *testing.T) {
 }
 
 func initTestDbRp() error {
+	_ = testClient.DropDatabase(testDB)
 	_, err := testClient.CreateDatabase(testDB)
 	if err != nil {
 		return err
