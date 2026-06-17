@@ -27,6 +27,7 @@ const (
 
 type Client struct {
 	addr            string // influxdb地址, 如：http://127.0.0.1:8086
+	httpClient      *http.Client           // 每实例独立的 HTTP 客户端，默认 1m 超时 + 跳过 TLS 校验，可通过 Option 覆盖
 	username        string // 用户名
 	password        string // 密码 或 token
 	mu              sync.RWMutex
@@ -49,6 +50,7 @@ type Client struct {
 func NewClient(addr string, opts ...Option) *Client {
 	c := &Client{
 		addr:            strings.TrimSuffix(addr, "/"),
+		httpClient:      defaultHTTPClient(),
 		bucketGroups:    make(map[string]*bucketGroup, 8),
 		groupSize:       16,
 		queryEpoch:      "s",
@@ -119,7 +121,7 @@ func (this *Client) Printf(format string, args ...interface{}) {
 
 // Flush 强制刷新写入，立即将所有缓存的数据写入InfluxDB，一般无需手动调用
 func (this *Client) Flush() {
-	defer runtimeUtil.Recover()
+	defer runtimeUtil.HandleRecover("Flush")
 
 	this.mu.RLock()
 	if len(this.bucketGroups) == 0 {
@@ -199,7 +201,7 @@ func (this *Client) doBatchWrite(writeUrl string, lines []string) error {
 		if logs.IsDebugEnable(this.logger) {
 			this.logger.Debug("[InfluxDB] 写入数据 url=%v, line_count=%d", writeUrl, len(lines[i:end]))
 		}
-		resBody, err := doRequest(http.MethodPost, writeUrl, "", data, nil)
+		resBody, err := this.doRequest(http.MethodPost, writeUrl, "", data, nil)
 		if err != nil {
 			this.countWrite(false)
 			this.logger.Error("[InfluxDB] url=%v, err=%v, resp=%v", writeUrl, err.Error(), string(resBody))

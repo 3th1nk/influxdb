@@ -12,20 +12,23 @@ import (
 	"time"
 )
 
-var (
-	client http.Client
-)
-
-func init() {
+// defaultHTTPClient 构建默认 HTTP 客户端，保留原有默认行为：
+// 1 分钟超时、每 Host 100 个空闲连接、跳过 TLS 证书校验。
+//
+// 之所以从全局单例 + init() 改为按实例构建，是为了让每个 Client
+// 都能独立配置超时、连接池与 TLS，互不影响。
+func defaultHTTPClient() *http.Client {
 	t := http.DefaultTransport.(*http.Transport).Clone()
 	t.IdleConnTimeout = time.Minute
 	t.MaxIdleConnsPerHost = 100
 	t.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	client.Transport = t
-	client.Timeout = time.Minute
+	return &http.Client{
+		Transport: t,
+		Timeout:   time.Minute,
+	}
 }
 
-func doRequest(method string, url, token string, body interface{}, r interface{}) ([]byte, error) {
+func (this *Client) doRequest(method string, url, token string, body interface{}, r interface{}) ([]byte, error) {
 	if method == "" {
 		method = http.MethodPost
 	}
@@ -57,7 +60,7 @@ func doRequest(method string, url, token string, body interface{}, r interface{}
 		req.Header.Set("Authorization", "Token "+token)
 	}
 
-	resp, err := client.Do(req)
+	resp, err := this.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

@@ -43,7 +43,7 @@ type queryResp struct {
 func (this *Client) RawQuery(db, rp, sql string) ([]*Series, error) {
 	queryUrl := this.buildQueryUrl(db, rp, sql)
 	var resp queryResp
-	resBody, err := doRequest(http.MethodGet, queryUrl, "", nil, &resp)
+	resBody, err := this.doRequest(http.MethodGet, queryUrl, "", nil, &resp)
 	if err != nil {
 		if logs.IsErrorEnable(this.logger) {
 			this.logger.Error("[InfluxDB] url=%v, err=%v, resp=%v", queryUrl, err.Error(), string(resBody))
