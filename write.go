@@ -28,9 +28,9 @@ func (this *Client) buildWriteUrl(db, rp string) string {
 }
 
 // RawWrite 执行写入操作
-//	- db: 数据库名，必须指定
-//	- rp: 保留策略名，为空时使用默认
-//	- lines: 符合influxdb行协议的数据，需自行处理转义
+//   - db: 数据库名，必须指定
+//   - rp: 保留策略名，为空时使用默认
+//   - lines: 符合influxdb行协议的数据，需自行处理转义
 func (this *Client) RawWrite(db, rp string, lines []string) error {
 	if db == "" {
 		return fmt.Errorf("missing database")
@@ -41,6 +41,7 @@ func (this *Client) RawWrite(db, rp string, lines []string) error {
 }
 
 // Point 数据点
+//
 //	注意：写入精度默认为秒，可以通过 WithWritePrecision 设置
 type Point struct {
 	Measurement string                 // 表名，必须指定
@@ -50,7 +51,8 @@ type Point struct {
 }
 
 // ToLineData 转换为行协议数据
-// 	行协议：<measurement>[,<tag_key>=<tag_value>[,<tag_key>=<tag_value>]] <field_key>=<field_value>[,<field_key>=<field_value>] [<timestamp>]
+//
+//	行协议：<measurement>[,<tag_key>=<tag_value>[,<tag_key>=<tag_value>]] <field_key>=<field_value>[,<field_key>=<field_value>] [<timestamp>]
 func (p *Point) ToLineData(sortTagKey bool) string {
 
 	tagArr := make([]string, 0, len(p.Tags))
@@ -104,10 +106,10 @@ func (p *Point) ToLineData(sortTagKey bool) string {
 }
 
 // Write 写入数据
-//	- db: 数据库名，必须指定
-//	- rp: 保留策略名，为空时使用默认
-//	- points: 数据点
-// 	- immediate: 是否立即写入
+//   - db: 数据库名，必须指定
+//   - rp: 保留策略名，为空时使用默认
+//   - points: 数据点
+//   - immediate: 是否立即写入
 func (this *Client) Write(db, rp string, points []*Point, immediate bool) error {
 	if db == "" {
 		return fmt.Errorf("missing database")
@@ -151,7 +153,9 @@ func (this *Client) Write(db, rp string, points []*Point, immediate bool) error 
 				_ = this.doBatchWrite(writeUrl, lines)
 			})
 		}); err != nil {
-			this.logger.Warn("[InfluxDB] 异步写入异常: %v", err)
+			// 桶溢出数据已弹出，此时池满只能丢弃并计数
+			this.countDrop()
+			this.logger.Warn("[InfluxDB] 写协程池已满，丢弃本批溢出数据: %v", err.Error())
 		}
 	}
 

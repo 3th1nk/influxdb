@@ -18,6 +18,5 @@ var (
 func init() {
 	testClient = NewClient(addr,
 		WithLogger(logs.Stdout(logs.LevelAll)),
-		WithDebugger(),
 	)
 }

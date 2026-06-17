@@ -2,11 +2,12 @@ package influxdb
 
 import (
 	"fmt"
-	"github.com/3th1nk/easygo/util/jsonUtil"
-	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/3th1nk/easygo/util/jsonUtil"
+	"github.com/stretchr/testify/assert"
 )
 
 func makePoints(n int) []*Point {
@@ -89,7 +90,7 @@ func TestClient_WriteReliability(t *testing.T) {
 	wg.Wait()
 	testClient.Close()
 
-	testClient.showWriteCount()
+	t.Log(testClient.WriteStats())
 }
 
 func BenchmarkClient_WritePerf(b *testing.B) {

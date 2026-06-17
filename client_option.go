@@ -1,10 +1,11 @@
 package influxdb
 
 import (
-	"github.com/3th1nk/easygo/util/logs"
-	"github.com/modern-go/reflect2"
 	"runtime"
 	"time"
+
+	"github.com/3th1nk/easygo/util/logs"
+	"github.com/modern-go/reflect2"
 )
 
 type Option func(*Client)
@@ -84,12 +85,6 @@ func WithFlushSize(size int) Option {
 			size = bucketSize
 		}
 		c.flushSize = size
-	}
-}
-
-func WithDebugger() Option {
-	return func(c *Client) {
-		c.debugger = newDebugger()
 	}
 }
 
